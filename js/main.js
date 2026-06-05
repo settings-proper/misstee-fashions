@@ -108,4 +108,60 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 600);
     });
   });
+
+  // Product image lightbox (tap to zoom)
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+
+  function openLightbox(imgEl, card) {
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt || '';
+
+    var name = card.querySelector('h3');
+    var price = card.querySelector('.product-price');
+    var caption = name ? name.textContent : '';
+    if (price) {
+      caption += '<span class="lb-price">' + price.textContent + '</span>';
+    }
+    lightboxCaption.innerHTML = caption;
+
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lightbox-open');
+  }
+
+  document.querySelectorAll('.product-card .product-image').forEach(function (imgWrap) {
+    imgWrap.addEventListener('click', function () {
+      var imgEl = imgWrap.querySelector('img');
+      var card = imgWrap.closest('.product-card');
+      if (imgEl && card) {
+        openLightbox(imgEl, card);
+      }
+    });
+  });
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener('click', closeLightbox);
+  }
+  if (lightbox) {
+    lightbox.addEventListener('click', function (e) {
+      // Close when clicking the dark backdrop (not the image itself)
+      if (e.target === lightbox || e.target.classList.contains('lightbox-content')) {
+        closeLightbox();
+      }
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+      closeLightbox();
+    }
+  });
 });
